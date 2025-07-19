@@ -1,0 +1,9 @@
+{
+	"name": "adf-openweatherapi",
+	"location": "southeastasia",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "940362db-4f71-45d8-b24f-d8bd6c2df10b",
+		"tenantId": "369ecb5b-bbe1-4695-bba3-75cd474dd3f0"
+	}
+}
