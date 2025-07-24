@@ -1,0 +1,9 @@
+{
+	"name": "openweather-adf",
+	"location": "australiasoutheast",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "80d736f2-3752-4f28-ba8c-97b72f7c56a1",
+		"tenantId": "1c7dde54-b84c-4ae2-abca-ad1c0da7a8db"
+	}
+}
