@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>WeatherWise 🌤️</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #74ebd5, #ACB6E5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(12px);
+            padding: 30px 40px;
+            border-radius: 18px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            text-align: center;
+            width: 400px;
+            color: #fff;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            font-size: 2rem;
+            letter-spacing: 1px;
+        }
+
+        label {
+            font-size: 1.1rem;
+        }
+
+        select {
+            margin-top: 10px;
+            padding: 8px 12px;
+            font-size: 1rem;
+            border-radius: 8px;
+            border: none;
+            outline: none;
+        }
+
+        button {
+            margin-top: 20px;
+            background: #4facfe;
+            background: linear-gradient(to right, #4facfe, #00f2fe);
+            color: white;
+            padding: 12px 18px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+        }
+
+        #result {
+            margin-top: 25px;
+            text-align: left;
+            background: rgba(0,0,0,0.25);
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        a {
+            display: inline-block;
+            margin-top: 20px;
+            color: #fff;
+            text-decoration: none;
+            font-weight: bold;
+            background: rgba(255,255,255,0.2);
+            padding: 8px 15px;
+            border-radius: 8px;
+            transition: background 0.2s ease;
+        }
+
+        a:hover {
+            background: rgba(255,255,255,0.35);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>WeatherWise 🌤️</h1>
+        <form id="predict-form" method="post">
+            <label>Select City:</label><br>
+            <select name="city">
+                {% for city in cities %}
+                <option value="{{ city }}">{{ city }}</option>
+                {% endfor %}
+            </select><br>
+            <button type="submit">⚡ Predict Next Hour</button>
+        </form>
+
+        <!-- Open-Meteo 7-Day Forecast Button -->
+    <form action="/openmeteo_forecast/" method="get" style="margin-top: 15px;">
+        <button type="submit">🌤 7-Day Forecast (Open-Meteo)</button>
+    </form>
+
+        <div id="result"></div>
+        <a href="/dashboard">📊 Go to Dashboard</a>
+    </div>
+
+    <script>
+    document.getElementById("predict-form").onsubmit = async function(e) {
+        e.preventDefault();
+        let formData = new FormData(this);
+        let response = await fetch("/predict", { method: "POST", body: formData });
+        let data = await response.json();
+
+        document.getElementById("result").innerHTML =
+            `<h3>${data.city} — ${data.predicted.condition}</h3>
+             <p>🌡️ Temp: <b>${data.predicted.temperature.toFixed(2)} °C</b></p>
+             <p>💧 Humidity: <b>${data.predicted.humidity.toFixed(2)} %</b></p>
+             <p>⏱ Pressure: <b>${data.predicted.pressure.toFixed(2)} hPa</b></p>
+             <p>🌬 Wind: <b>${data.predicted.wind_speed.toFixed(2)} m/s</b></p>`;
+    }
+    </script>
+</body>
+</html>

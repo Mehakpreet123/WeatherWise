@@ -1,0 +1,12 @@
+pandas
+matplotlib
+seaborn
+requests
+geopy
+openmeteo-requests
+requests-cache
+retry-requests
+Flask
+apscheduler
+scikit-learn
+numpy

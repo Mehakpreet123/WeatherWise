@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>7-Day Forecast - {{ city }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #74ebd5, #ACB6E5);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        h2 {
+            color: #fff;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .forecast-row {
+            display: flex;
+            overflow-x: auto;
+            gap: 15px;
+            padding: 15px; /* Added padding to fix leftmost card */
+            background: rgba(255,255,255,0.05); /* subtle background so scroll looks consistent */
+            border-radius: 15px;
+            width: 100%;
+        }
+
+        /* Hide scrollbar but still allow scrolling */
+        .forecast-row::-webkit-scrollbar {
+            height: 8px;
+        }
+        .forecast-row::-webkit-scrollbar-thumb {
+            background: rgba(0,0,0,0.3);
+            border-radius: 4px;
+        }
+        .forecast-row::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.05);
+        }
+
+        .card-forecast {
+            flex: 0 0 auto; /* prevent shrinking */
+            min-width: 220px;
+            background: rgba(0,0,0,0.65);
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            color: #fff;
+            padding: 20px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .card-forecast:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+        }
+
+        .card-forecast h5 {
+            font-size: 1.25rem;
+            margin-bottom: 15px;
+        }
+
+        .card-forecast p {
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+
+        .btn-hourly {
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        a.back-btn {
+            display: inline-block;
+            margin-top: 20px;
+            color: #fff;
+            text-decoration: none;
+            font-weight: bold;
+            background: rgba(255,255,255,0.2);
+            padding: 8px 15px;
+            border-radius: 8px;
+            transition: background 0.2s ease;
+        }
+
+        a.back-btn:hover {
+            background: rgba(255,255,255,0.35);
+        }
+    </style>
+</head>
+<body>
+
+    <h2 style="color: #222; background: rgba(255,255,255,0.7); padding: 10px 20px; border-radius: 10px;">
+    7-Day Forecast for {{ city }}
+    </h2>
+
+    <div class="forecast-row">
+        {% for day in daily_data %}
+        <div class="card-forecast">
+            <div class="mb-2" style="font-size: 1.5rem;">☀️</div>
+            <h5>{{ day.date }}</h5>
+            <p>🌡 Max: <b>{{ day.temperature_2m_max }}°C</b>, Min: <b>{{ day.temperature_2m_min }}°C</b></p>
+            <p>☔ Precip: {{ day.precipitation_sum }} mm</p>
+            <p>🌬 Wind: {{ day.windspeed_10m_max }} m/s</p>
+            <p>☁ Clouds: {{ day.cloudcover_mean }}%</p>
+            <p>☀ UV Index: {{ day.uv_index_max }}</p>
+            <a href="/openmeteo_forecast/{{ city }}/{{ day.date }}" class="btn btn-info btn-hourly">
+                View Hourly
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+
+    <a href="/openmeteo_forecast" class="back-btn" style="color: #222; background: rgba(255,255,255,0.7);">
+    ⬅ Back to City Selection
+    </a>
+
+</body>
+</html>

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Hourly Forecast - {{ city }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #74ebd5, #ACB6E5);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            color: #222;
+        }
+
+        h2 {
+            text-align: center;
+            padding: 12px 20px;
+            background: rgba(255,255,255,0.75);
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        a.back-btn {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #222;
+            background: rgba(255,255,255,0.75);
+            padding: 8px 15px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background 0.2s ease;
+        }
+
+        a.back-btn:hover {
+            background: rgba(255,255,255,0.9);
+        }
+
+        .hourly-cards {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .hourly-cards .card {
+            background: rgba(255,255,255,0.25);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 15px;
+            min-width: 150px;
+            flex: 1 1 150px;
+            text-align: center;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .hourly-cards .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        .hourly-cards h6 {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .hourly-cards p {
+            margin: 4px 0;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <h2>Hourly Forecast for {{ city }} on {{ day }}</h2>
+    <a href="/openmeteo_forecast/{{ city }}" class="back-btn">⬅ Back to Daily Forecast</a>
+
+    <div class="hourly-cards">
+        {% for hour in hourly_data %}
+        <div class="card">
+            <h6>{{ hour.datetime.strftime("%H:%M") }}</h6>
+            <p>🌡 Temp: {{ hour.temperature_2m }}°C</p>
+            <p>💧 Humidity: {{ hour.relative_humidity_2m }}%</p>
+            <p>🌬 Wind: {{ hour.windspeed_10m }} m/s</p>
+            <p>☔ Precip: {{ hour.precipitation }} mm</p>
+            <p>☁ Clouds: {{ hour.cloudcover }}%</p>
+            <p>☀ UV Index: {{ hour.uv_index }}</p>
+        </div>
+        {% endfor %}
+    </div>
+</body>
+</html>

@@ -1,0 +1,26 @@
+{
+  "numeric_features": [
+    "temp",
+    "dwpt",
+    "rhum",
+    "prcp",
+    "wdir",
+    "wspd",
+    "wpgt",
+    "pres",
+    "coco",
+    "hour",
+    "day",
+    "month",
+    "weekday"
+  ],
+  "categorical_features": [
+    "city"
+  ],
+  "targets": {
+    "temp": "target_temp",
+    "rhum": "target_rhum",
+    "pres": "target_pres",
+    "wspd": "target_wspd"
+  }
+}

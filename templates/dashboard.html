@@ -1,0 +1,249 @@
+{% extends "layout.html" %}
+{% block content %}
+<h2 class="mb-4">📊 Weather & Prediction Dashboard</h2>
+
+<!-- Filters -->
+<div class="card p-3 mb-4">
+  <div class="row g-3">
+    <div class="col-md-3">
+      <label for="citySelect" class="form-label">Select City:</label>
+      <select id="citySelect" class="form-select">
+        <option value="All">All Cities</option>
+        {% for city in cities %}
+          <option value="{{ city }}">{{ city }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="col-md-3">
+      <label for="yearSelect" class="form-label">Select Year:</label>
+      <select id="yearSelect" class="form-select">
+        <option value="All">All Years</option>
+        {% for y in years %}
+          <option value="{{ y }}">{{ y }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="col-md-3">
+      <label for="monthSelect" class="form-label">Select Month:</label>
+      <select id="monthSelect" class="form-select">
+        <option value="All">All Months</option>
+        {% for m in months %}
+          <option value="{{ m }}">{{ m }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="col-md-3">
+      <label for="dateSelect" class="form-label">Select Date:</label>
+      <select id="dateSelect" class="form-select">
+        <option value="All">All Dates</option>
+        {% for d in dates %}
+          <option value="{{ d }}">{{ d }}</option>
+        {% endfor %}
+      </select>
+    </div>
+  </div>
+</div>
+
+<!-- Charts -->
+<div class="row">
+  <div class="col-md-6 chart-card">
+    <div class="card p-3">
+      <h5>Temperature Over Time</h5>
+      <div id="tempChart"></div>
+    </div>
+  </div>
+  <div class="col-md-6 chart-card">
+    <div class="card p-3">
+      <h5>Humidity Over Time</h5>
+      <div id="humChart"></div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-6 chart-card">
+    <div class="card p-3">
+      <h5>Pressure Over Time</h5>
+      <div id="presChart"></div>
+    </div>
+  </div>
+  <div class="col-md-6 chart-card">
+    <div class="card p-3">
+      <h5>Wind Speed Over Time</h5>
+      <div id="wspdChart"></div>
+    </div>
+  </div>
+</div>
+
+<script id="rawDataScript" type="application/json">
+  {{ rows | tojson | safe }}
+</script>
+
+<script>
+  const rawData = JSON.parse(document.getElementById("rawDataScript").textContent);
+  const citySelect = document.getElementById("citySelect");
+  const yearSelect = document.getElementById("yearSelect");
+  const monthSelect = document.getElementById("monthSelect");
+  const dateSelect = document.getElementById("dateSelect");
+
+  console.log("Raw data from Flask:", rawData);
+
+  function plotCharts() {
+    let filtered = rawData;
+
+    // City filter
+    if (citySelect.value !== "All") {
+      filtered = filtered.filter(r => r.city === citySelect.value);
+    }
+
+    // Convert timestamp to JS Date
+    filtered = filtered.map(r => ({
+      ...r,
+      jsDate: new Date(r.timestamp)
+    }));
+
+    // Year filter
+    if (yearSelect.value !== "All") {
+      filtered = filtered.filter(r => r.jsDate.getFullYear().toString() === yearSelect.value);
+    }
+
+    // Month filter
+    if (monthSelect.value !== "All") {
+      filtered = filtered.filter(r => r.jsDate.toLocaleString('default', { month: 'long' }) === monthSelect.value);
+    }
+
+    // Date filter
+    if (dateSelect.value !== "All") {
+      filtered = filtered.filter(r => r.jsDate.toISOString().split("T")[0] === dateSelect.value);
+    }
+
+    console.log("Filtered data:", filtered);
+
+    // Extract data
+    let timestamps = filtered.map(r => r.timestamp);
+    let predTemp   = filtered.map(r => r.pred_temp);
+    let actualTemp = filtered.map(r => r.actual_temp);
+    let predHum    = filtered.map(r => r.pred_hum);
+    let actualHum  = filtered.map(r => r.actual_hum);
+    let predPres   = filtered.map(r => r.pred_pres);
+    let actualPres = filtered.map(r => r.actual_pres);
+    let predWspd   = filtered.map(r => r.pred_wspd);
+    let actualWspd = filtered.map(r => r.actual_wspd);
+
+    
+// Temperature Chart
+Plotly.newPlot("tempChart", [
+  { x: timestamps, y: actualTemp, type: 'scatter', mode: 'lines+markers', name: 'Actual Temp', line: {color: '#FF4500'}, marker: {color: '#FF4500'} },
+  { x: timestamps, y: predTemp,   type: 'scatter', mode: 'lines+markers', name: 'Predicted Temp', line: {color: '#FFD700'}, marker: {color: '#FFD700'} }
+], {
+  margin: { t: 30 },
+  xaxis: { title: "Time", titlefont: { color: '#000' }, tickfont: { color: '#000' } },
+  yaxis: { 
+    title: "°C", 
+    titlefont: { color: '#000' }, 
+    tickfont: { color: '#000' },
+    range: [0, 50],   // fixed range
+    dtick: 5
+  },
+  legend: {
+    orientation: "h",
+    yanchor: "bottom",
+    y: 1.1,
+    xanchor: "center",
+    x: 0.5
+  },
+  plot_bgcolor: 'rgba(0,0,0,0)',
+  paper_bgcolor: 'rgba(0,0,0,0)',
+});
+
+// Humidity Chart
+Plotly.newPlot("humChart", [
+  { x: timestamps, y: actualHum, type: 'scatter', mode: 'lines+markers', name: 'Actual Humidity', line: {color: '#1E90FF'}, marker: {color: '#1E90FF'} },
+  { x: timestamps, y: predHum,   type: 'scatter', mode: 'lines+markers', name: 'Predicted Humidity', line: {color: '#00FFFF'}, marker: {color: '#00FFFF'} }
+], {
+  margin: { t: 30 },
+  xaxis: { title: "Time", titlefont: { color: '#000' }, tickfont: { color: '#000' } },
+  yaxis: { 
+    title: "%", 
+    titlefont: { color: '#000' }, 
+    tickfont: { color: '#000' },
+    range: [0, 100],   // humidity is always 0-100
+    dtick: 10
+  },
+  legend: {
+    orientation: "h",
+    yanchor: "bottom",
+    y: 1.1,
+    xanchor: "center",
+    x: 0.5
+  },
+  plot_bgcolor: 'rgba(0,0,0,0)',
+  paper_bgcolor: 'rgba(0,0,0,0)',
+});
+
+// Pressure Chart
+Plotly.newPlot("presChart", [
+  { x: timestamps, y: actualPres, type: 'scatter', mode: 'lines+markers', name: 'Actual Pressure', line: {color: '#006400'}, marker: {color: '#006400'} },
+  { x: timestamps, y: predPres,   type: 'scatter', mode: 'lines+markers', name: 'Predicted Pressure', line: {color: '#ADFF2F'}, marker: {color: '#ADFF2F'} }
+], {
+  margin: { t: 30 },
+  xaxis: { title: "Time", titlefont: { color: '#000' }, tickfont: { color: '#000' } },
+  yaxis: { 
+    title: "hPa", 
+    titlefont: { color: '#000' }, 
+    tickfont: { color: '#000' },
+    range: [900, 1100],   // typical atmospheric pressure
+    dtick: 20
+  },
+  legend: {
+    orientation: "h",
+    yanchor: "bottom",
+    y: 1.1,
+    xanchor: "center",
+    x: 0.5
+  },
+  plot_bgcolor: 'rgba(0,0,0,0)',
+  paper_bgcolor: 'rgba(0,0,0,0)',
+});
+
+// Wind Speed Chart
+Plotly.newPlot("wspdChart", [
+  { x: timestamps, y: actualWspd, type: 'scatter', mode: 'lines+markers', name: 'Actual Wind Speed', line: {color: '#8B008B'}, marker: {color: '#8B008B'} },
+  { x: timestamps, y: predWspd,   type: 'scatter', mode: 'lines+markers', name: 'Predicted Wind Speed', line: {color: '#FF00FF'}, marker: {color: '#FF00FF'} }
+], {
+  margin: { t: 30 },
+  xaxis: { title: "Time", titlefont: { color: '#000' }, tickfont: { color: '#000' } },
+  yaxis: { 
+    title: "km/h", 
+    titlefont: { color: '#000' }, 
+    tickfont: { color: '#000' },
+    range: [0, 100],   // keeps it consistent
+    dtick: 10
+  },
+  legend: {
+    orientation: "h",
+    yanchor: "bottom",
+    y: 1.1,
+    xanchor: "center",
+    x: 0.5
+  },
+  plot_bgcolor: 'rgba(0,0,0,0)',
+  paper_bgcolor: 'rgba(0,0,0,0)',
+});
+
+
+  }
+
+  // Event listeners
+  [citySelect, yearSelect, monthSelect, dateSelect].forEach(el => {
+    el.addEventListener("change", plotCharts);
+  });
+
+  // Initial load
+  plotCharts();
+</script>
+
+{% endblock %}

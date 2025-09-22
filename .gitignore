@@ -1,0 +1,24 @@
+\venv
+.cache.sqlite
+# Virtual environment
+venv/
+ENV/
+.venv/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# SQLite cache files
+*.sqlite
+*.sqlite3
+.cache.sqlite
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
